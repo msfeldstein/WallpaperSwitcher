@@ -3,6 +3,7 @@ package com.mijoro.wallpaperswitcher;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,7 +18,12 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.WallpaperManager;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.KeyEvent;
@@ -28,7 +34,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-public class SelectRSSActivity extends Activity {
+public class SelectRSSActivity extends Activity implements LatestImageFetcher.ImageFetcherDelegate {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +45,8 @@ public class SelectRSSActivity extends Activity {
 			@Override
 			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 				if (actionId == EditorInfo.IME_ACTION_DONE) {
-					setFeedUrl(v.getText().toString());
+					//setFeedUrl(v.getText().toString());
+					setFeedUrl("http://geometrydaily.tumblr.com/rss");
 				}
 				return false;
 			}
@@ -54,7 +61,26 @@ public class SelectRSSActivity extends Activity {
 	}
 	
 	private void setFeedUrl(String surl) {
-		new Thread(feedParser).start();
+		LatestImageFetcher imageFetcher = new LatestImageFetcher();
+		imageFetcher.delegate = this;
+		imageFetcher.fetchFirstImageAt(surl);
+		SharedPreferences settings = getSharedPreferences("WallpaperSwitcher", 0);
+	    SharedPreferences.Editor editor = settings.edit();
+	    editor.putString("rssURL", surl);
+	    editor.commit();
+	    setupRecurringSwitching();
+	}
+	
+	private void setupRecurringSwitching() {
+		Intent intent = new Intent(this, SetWallpaperReceiver.class);
+		intent.setAction("com.mijoro.wallpaperswitcher.CHANGE_WALLPAPER");
+		PendingIntent pendingIntent = PendingIntent.getBroadcast(this,
+		            0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(System.currentTimeMillis());
+		AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+		alarm.cancel(pendingIntent);
+		alarm.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_HOUR, pendingIntent);
 	}
 	
 	private void setLatestImage(Bitmap b) {
@@ -68,117 +94,10 @@ public class SelectRSSActivity extends Activity {
 			e.printStackTrace();
 		}
 	}
-	
-	Runnable feedParser = new Runnable() {
-		@Override
-		public void run() {
-			XmlHandler myXMLHandler = new XmlHandler();
-			try {
-			    /**
-			    * Create a new instance of the SAX parser
-			    **/
-			    SAXParserFactory saxPF = SAXParserFactory.newInstance();
-			    SAXParser saxP = saxPF.newSAXParser();
-			    XMLReader xmlR = saxP.getXMLReader();
-			    URL url = new URL("http://geometrydaily.tumblr.com/rss"); // URL of the XML
-			    
-			    xmlR.setContentHandler(myXMLHandler);
-			    xmlR.parse(new InputSource(url.openStream()));
-			    
-			    
-			} catch (MySAXTerminatorException e) {
-				System.out.println("Done!");
-			} catch (Exception e) {
-				e.printStackTrace();
-			    System.out.println(e);
-			}
-			if (myXMLHandler.result != null) {
-				System.out.println("Found image " + myXMLHandler.result);
-				URL url;
-				try {
-					url = new URL(myXMLHandler.result);
-					final Bitmap b = BitmapFactory.decodeStream(url.openStream());
-					runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							setLatestImage(b);
-						}
-					});
-				} catch (MalformedURLException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				
-			}
-		}
-	};
-	
-	public class MySAXTerminatorException extends SAXException {
-		private static final long serialVersionUID = 1L;
+
+	@Override
+	public void imageFetched(Bitmap b) {
+		setLatestImage(b);
 	}
 	
-	public class XmlHandler extends DefaultHandler {
-		
-		private String tagName;
-		private StringBuilder currentStringData;
-		public String result; 
-		Pattern pattern;
-		Matcher matcher;
-		
-		public XmlHandler() {
-			pattern = Pattern.compile("^(http|https|ftp)\\://[a-zA-Z0-9\\-\\.]+\\.[a-zA-Z]{2,3}(:[a-zA-Z0-9]*)?/?([a-zA-Z0-9\\-\\._\\?\\,\\'/\\\\\\+&amp;%\\$#\\=~])*$");
-		}
-		
-	    /**
-	     * This will be called when the tags of the XML starts.
-	     **/
-	    @Override
-	    public void startElement(String uri, String localName, String qName,
-	            Attributes attributes) throws SAXException {
-	        tagName = localName;
-	        currentStringData = new StringBuilder();
-	    }
-	    /**
-	     * This will be called when the tags of the XML end.
-	     **/
-	    @Override
-	    public void endElement(String uri, String localName, String qName)
-	            throws SAXException {
-	    	if (tagName.toLowerCase().equals("description")) {
-	    		String res = searchForURL(currentStringData.toString());
-	    		if (res != null && !res.isEmpty()) {
-	    			result = res;
-	    			throw new MySAXTerminatorException();
-	    		}
-	    	}
-	    }
-	    /**
-	     * This is called to get the tags value
-	     **/
-	    @Override
-	    public void characters(char[] ch, int start, int length)
-	            throws SAXException {
-	    	if (tagName.toLowerCase().equals("description")) {
-	    		currentStringData.append(ch, start, length);
-	    	}
-	    }
-	    
-	    private String searchForURL(String s) {
-	    	String [] parts = s.split("\"");
-
-	        // Attempt to convert each item into an URL.   
-	        for( String item : parts ) try {
-	            URL url = new URL(item);
-	            // If possible then replace with anchor...
-	            System.out.print(url.toString()); 
-	            return url.toString();
-	        } catch (MalformedURLException e) {
-	        	System.out.println("No url in ");
-	        }
-	        return null;
-
-	    }
-	}
-
 }

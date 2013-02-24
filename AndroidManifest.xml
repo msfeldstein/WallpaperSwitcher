@@ -25,6 +25,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <receiver android:name="com.mijoro.wallpaperswitcher.SetWallpaperReceiver" >
+            <intent-filter>
+                <action android:name="com.mijoro.wallpaperswitcher.CHANGE_WALLPAPER" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
