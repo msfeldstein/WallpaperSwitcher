@@ -17,6 +17,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.WallpaperManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.KeyEvent;
@@ -59,6 +60,13 @@ public class SelectRSSActivity extends Activity {
 	private void setLatestImage(Bitmap b) {
 		ImageView image = (ImageView)findViewById(R.id.imageView1);
 		image.setImageBitmap(b);
+		WallpaperManager wm = WallpaperManager.getInstance(this);
+		try {
+			wm.setBitmap(b);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	Runnable feedParser = new Runnable() {
