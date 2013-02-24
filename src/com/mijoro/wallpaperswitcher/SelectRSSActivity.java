@@ -3,6 +3,8 @@ package com.mijoro.wallpaperswitcher;
 import java.io.IOException;
 import java.util.Calendar;
 
+import com.mijoro.wallpaperswitcher.SuggestedSourceAdapter.Feed;
+
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -12,14 +14,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.TextView.OnEditorActionListener;
@@ -27,8 +33,11 @@ import android.widget.TextView.OnEditorActionListener;
 public class SelectRSSActivity extends Activity implements LatestImageFetcher.ImageFetcherDelegate {
 	Button mSetFeedButton;
 	EditText mUrlField;
+	ListView mSuggestedList;
+	SuggestedSourceAdapter mAdapter;
 	String mFeedUrl;
 	Bitmap mLatestBitmap;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -50,6 +59,20 @@ public class SelectRSSActivity extends Activity implements LatestImageFetcher.Im
 					setFeedUrl(mFeedUrl);
 				}
 				return false;
+			}
+		});
+		
+		mSuggestedList = (ListView)findViewById(R.id.suggestedList);
+		mAdapter = new SuggestedSourceAdapter(this);
+		mSuggestedList.setAdapter(mAdapter);
+		mSuggestedList.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int position,
+					long arg3) {
+				Feed feed = (Feed)mAdapter.getItem(position);
+				mFeedUrl = "http://"+feed.urlslug+".tumblr.com/rss";
+				Bitmap b = BitmapFactory.decodeResource(getResources(), feed.resourceID);
+				setLatestImage(b);
 			}
 		});
 	}
@@ -78,9 +101,9 @@ public class SelectRSSActivity extends Activity implements LatestImageFetcher.Im
 		try {
 			wm.setBitmap(mLatestBitmap);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		finish();
 	}
 	
 	private void setupRecurringSwitching() {
@@ -100,6 +123,7 @@ public class SelectRSSActivity extends Activity implements LatestImageFetcher.Im
 		image.setImageBitmap(b);
 		mLatestBitmap = b;
 		mSetFeedButton.setVisibility(View.VISIBLE);
+		mSuggestedList.setVisibility(View.GONE);
 	}
 
 	@Override

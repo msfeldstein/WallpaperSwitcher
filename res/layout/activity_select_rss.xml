@@ -12,6 +12,15 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/urlField" />
+    
+    <ListView
+        android:id="@+id/suggestedList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/urlField" />
 
     <TextView
         android:id="@+id/textView1"
