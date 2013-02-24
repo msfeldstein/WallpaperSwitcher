@@ -40,6 +40,24 @@ public class LatestImageFetcher {
 		new Thread(feedParser).start();
 	}
 	
+	private void sendErrorOnMainThread() {
+		h.post(new Runnable() {
+			@Override
+			public void run() {
+				delegate.errorFetchingFeed();
+			}
+		});
+	}
+	
+	private void sendBitmapOnMainThread(final Bitmap b) {
+		h.post(new Runnable() {
+			@Override
+			public void run() {
+				delegate.imageFetched(b);
+			}
+		});
+	}
+	
 	Runnable feedParser = new Runnable() {
 		@Override
 		public void run() {
@@ -58,11 +76,10 @@ public class LatestImageFetcher {
 			    
 			    
 			} catch (MySAXTerminatorException e) {
-				System.out.println("Done!");
+				System.out.println("Done fetching a bitmap!");
 			} catch (Exception e) {
 				e.printStackTrace();
-			    System.out.println(e);
-			    delegate.errorFetchingFeed();
+			    sendErrorOnMainThread();
 			}
 			if (myXMLHandler.result != null) {
 				System.out.println("Found image " + myXMLHandler.result);
@@ -70,12 +87,7 @@ public class LatestImageFetcher {
 				try {
 					url = new URL(myXMLHandler.result);
 					final Bitmap b = BitmapFactory.decodeStream(url.openStream());
-					h.post(new Runnable() {
-						@Override
-						public void run() {
-							delegate.imageFetched(b);
-						}
-					});
+					sendBitmapOnMainThread(b);
 				} catch (MalformedURLException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
@@ -143,10 +155,8 @@ public class LatestImageFetcher {
 	        for( String item : parts ) try {
 	            URL url = new URL(item);
 	            // If possible then replace with anchor...
-	            System.out.print(url.toString()); 
 	            return url.toString();
 	        } catch (MalformedURLException e) {
-	        	System.out.println("No url in ");
 	        }
 	        return null;
 

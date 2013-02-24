@@ -45,7 +45,6 @@ public class SelectRSSActivity extends Activity implements LatestImageFetcher.Im
 			@Override
 			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 				if (actionId == EditorInfo.IME_ACTION_DONE) {
-					//setFeedUrl();
 					String blogName = v.getText().toString();
 					mFeedUrl = "http://"+blogName+".tumblr.com/rss";
 					setFeedUrl(mFeedUrl);
@@ -110,17 +109,8 @@ public class SelectRSSActivity extends Activity implements LatestImageFetcher.Im
 
 	@Override
 	public void errorFetchingFeed() {
-		runOnUiThread(new ErrorShower());
+		Toast.makeText(SelectRSSActivity.this, "Error Fetching Feed", Toast.LENGTH_SHORT).show();
+		mUrlField.requestFocusFromTouch();
+		mUrlField.selectAll();
 	}
-	
-	private class ErrorShower implements Runnable {
-		@Override
-		public void run() {
-			Toast.makeText(SelectRSSActivity.this, "Error Fetching Feed", Toast.LENGTH_SHORT).show();
-			mUrlField.requestFocusFromTouch();
-			mUrlField.selectAll();
-		}
-		
-	}
-	
 }
