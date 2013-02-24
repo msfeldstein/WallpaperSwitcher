@@ -4,20 +4,6 @@
     android:layout_height="match_parent"
     tools:context=".SelectRSSActivity" >
 
-    <EditText
-        android:id="@+id/urlField"
-        android:singleLine="true"
-        android:imeOptions="actionDone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:ems="10" >
-
-        <requestFocus />
-    </EditText>
-
     <ImageView
         android:id="@+id/imageView1"
         android:layout_width="wrap_content"
@@ -26,5 +12,39 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/urlField" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/urlField"
+        android:layout_alignBottom="@+id/urlField"
+        android:layout_alignParentRight="true"
+        android:text=".tumblr.com" />
+
+    <EditText
+        android:id="@+id/urlField"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/textView1"
+        android:ems="10"
+        android:hint="Blog Name"
+        android:imeOptions="actionDone"
+        android:singleLine="true" >
+
+        <requestFocus />
+    </EditText>
+
+    <Button
+        android:id="@+id/setfeedbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:text="Use This Feed"
+        android:visibility="gone" />
 
 </RelativeLayout>

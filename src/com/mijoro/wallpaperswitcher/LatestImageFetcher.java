@@ -23,6 +23,7 @@ import android.os.Handler;
 public class LatestImageFetcher {
 	public interface ImageFetcherDelegate {
 		public void imageFetched(Bitmap b);
+		public void errorFetchingFeed();
 	}
 	
 	private String urlStringToFetch;
@@ -61,6 +62,7 @@ public class LatestImageFetcher {
 			} catch (Exception e) {
 				e.printStackTrace();
 			    System.out.println(e);
+			    delegate.errorFetchingFeed();
 			}
 			if (myXMLHandler.result != null) {
 				System.out.println("Found image " + myXMLHandler.result);

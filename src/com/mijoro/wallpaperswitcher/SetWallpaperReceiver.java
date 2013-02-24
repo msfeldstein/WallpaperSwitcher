@@ -32,4 +32,9 @@ public class SetWallpaperReceiver extends BroadcastReceiver implements LatestIma
 		}
 	}
 
+	@Override
+	public void errorFetchingFeed() {
+		System.out.println("Automatic wallpaper fetcher has an error fetching feed");
+	}
+
 }

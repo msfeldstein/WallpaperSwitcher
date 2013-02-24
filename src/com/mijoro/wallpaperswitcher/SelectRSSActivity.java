@@ -1,20 +1,7 @@
 package com.mijoro.wallpaperswitcher;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Calendar;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.DefaultHandler;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -25,28 +12,43 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.TextView.OnEditorActionListener;
 
 public class SelectRSSActivity extends Activity implements LatestImageFetcher.ImageFetcherDelegate {
-
+	Button mSetFeedButton;
+	EditText mUrlField;
+	String mFeedUrl;
+	Bitmap mLatestBitmap;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_select_rss);
-		EditText urlField = (EditText)findViewById(R.id.urlField);
-		urlField.setOnEditorActionListener(new OnEditorActionListener() {
+		mSetFeedButton = (Button) findViewById(R.id.setfeedbutton);
+		mSetFeedButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				commitFeedUrl();
+			}
+		});
+		mUrlField = (EditText)findViewById(R.id.urlField);
+		mUrlField.setOnEditorActionListener(new OnEditorActionListener() {
 			@Override
 			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 				if (actionId == EditorInfo.IME_ACTION_DONE) {
-					//setFeedUrl(v.getText().toString());
-					setFeedUrl("http://geometrydaily.tumblr.com/rss");
+					//setFeedUrl();
+					String blogName = v.getText().toString();
+					mFeedUrl = "http://"+blogName+".tumblr.com/rss";
+					setFeedUrl(mFeedUrl);
 				}
 				return false;
 			}
@@ -64,11 +66,22 @@ public class SelectRSSActivity extends Activity implements LatestImageFetcher.Im
 		LatestImageFetcher imageFetcher = new LatestImageFetcher();
 		imageFetcher.delegate = this;
 		imageFetcher.fetchFirstImageAt(surl);
+	}
+	
+	private void commitFeedUrl() {
 		SharedPreferences settings = getSharedPreferences("WallpaperSwitcher", 0);
 	    SharedPreferences.Editor editor = settings.edit();
-	    editor.putString("rssURL", surl);
+	    editor.putString("rssURL", mFeedUrl);
 	    editor.commit();
 	    setupRecurringSwitching();
+	    
+	    WallpaperManager wm = WallpaperManager.getInstance(this);
+		try {
+			wm.setBitmap(mLatestBitmap);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	private void setupRecurringSwitching() {
@@ -86,18 +99,28 @@ public class SelectRSSActivity extends Activity implements LatestImageFetcher.Im
 	private void setLatestImage(Bitmap b) {
 		ImageView image = (ImageView)findViewById(R.id.imageView1);
 		image.setImageBitmap(b);
-		WallpaperManager wm = WallpaperManager.getInstance(this);
-		try {
-			wm.setBitmap(b);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		mLatestBitmap = b;
+		mSetFeedButton.setVisibility(View.VISIBLE);
 	}
 
 	@Override
 	public void imageFetched(Bitmap b) {
 		setLatestImage(b);
+	}
+
+	@Override
+	public void errorFetchingFeed() {
+		runOnUiThread(new ErrorShower());
+	}
+	
+	private class ErrorShower implements Runnable {
+		@Override
+		public void run() {
+			Toast.makeText(SelectRSSActivity.this, "Error Fetching Feed", Toast.LENGTH_SHORT).show();
+			mUrlField.requestFocusFromTouch();
+			mUrlField.selectAll();
+		}
+		
 	}
 	
 }
