@@ -20,6 +20,7 @@ import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
@@ -124,6 +125,9 @@ public class SelectRSSActivity extends Activity implements LatestImageFetcher.Im
 		mLatestBitmap = b;
 		mSetFeedButton.setVisibility(View.VISIBLE);
 		mSuggestedList.setVisibility(View.GONE);
+		InputMethodManager imm = (InputMethodManager)getSystemService(
+			      Context.INPUT_METHOD_SERVICE);
+			imm.hideSoftInputFromWindow(mUrlField.getWindowToken(), 0);
 	}
 
 	@Override
