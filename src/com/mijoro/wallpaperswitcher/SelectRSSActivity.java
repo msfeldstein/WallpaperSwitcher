@@ -112,15 +112,7 @@ public class SelectRSSActivity extends Activity implements LatestImageFetcher.Im
 	}
 	
 	private void setupRecurringSwitching() {
-		Intent intent = new Intent(this, SetWallpaperReceiver.class);
-		intent.setAction("com.mijoro.wallpaperswitcher.CHANGE_WALLPAPER");
-		PendingIntent pendingIntent = PendingIntent.getBroadcast(this,
-		            0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTimeInMillis(System.currentTimeMillis());
-		AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-		alarm.cancel(pendingIntent);
-		alarm.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_HOUR, pendingIntent);
+		SetWallpaperReceiver.setupRecurringAlarm(this);
 	}
 	
 	private void setLatestImage(Bitmap b) {
