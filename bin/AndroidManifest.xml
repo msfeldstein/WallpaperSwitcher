@@ -26,12 +26,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="com.mijoro.wallpaperswitcher.FeedViewActivity"></activity>
 
         <receiver android:name="com.mijoro.wallpaperswitcher.SetWallpaperReceiver" >
             <intent-filter>
                 <action android:name="com.mijoro.wallpaperswitcher.CHANGE_WALLPAPER" />
             </intent-filter>
         </receiver>
+
+        <activity
+            android:name="com.mijoro.wallpaperswitcher.FeedViewActivity"
+            android:label="@string/title_activity_feed_view" >
+        </activity>
     </application>
 
 </manifest>

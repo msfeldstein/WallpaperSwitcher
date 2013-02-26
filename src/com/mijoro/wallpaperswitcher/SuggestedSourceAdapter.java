@@ -9,12 +9,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 public class SuggestedSourceAdapter extends BaseAdapter {
-	public class Feed {
-		public String urlslug;
-		public String title;
-		public int resourceID;
-	}
-	
 	private String[] feeds = new String[3];
 	private String[] feedNames = new String[3];
 	private int[] imageIDs = new int[3];

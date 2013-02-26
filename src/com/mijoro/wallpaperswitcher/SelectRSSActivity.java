@@ -1,37 +1,23 @@
 package com.mijoro.wallpaperswitcher;
 
-import java.io.IOException;
-import java.util.Calendar;
-
-import com.mijoro.wallpaperswitcher.SuggestedSourceAdapter.Feed;
-
 import android.os.Bundle;
 import android.app.Activity;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.app.WallpaperManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.TextView.OnEditorActionListener;
 
-public class SelectRSSActivity extends Activity implements LatestImageFetcher.ImageFetcherDelegate {
+public class SelectRSSActivity extends Activity {
 	Button mSetFeedButton;
 	EditText mUrlField;
 	ListView mSuggestedList;
@@ -43,21 +29,19 @@ public class SelectRSSActivity extends Activity implements LatestImageFetcher.Im
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_select_rss);
-		mSetFeedButton = (Button) findViewById(R.id.setfeedbutton);
-		mSetFeedButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				commitFeedUrl();
-			}
-		});
+
 		mUrlField = (EditText)findViewById(R.id.urlField);
 		mUrlField.setOnEditorActionListener(new OnEditorActionListener() {
 			@Override
 			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 				if (actionId == EditorInfo.IME_ACTION_DONE) {
 					String blogName = v.getText().toString();
-					mFeedUrl = "http://"+blogName+".tumblr.com/rss";
-					setFeedUrl(mFeedUrl);
+					Feed feed = new Feed();
+					feed.urlslug = blogName;
+					feed.title = blogName;
+					Intent i = new Intent(SelectRSSActivity.this, FeedViewActivity.class);
+					i.putExtra("feed", feed);
+					startActivity(i);
 				}
 				return false;
 			}
@@ -71,11 +55,22 @@ public class SelectRSSActivity extends Activity implements LatestImageFetcher.Im
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position,
 					long arg3) {
 				Feed feed = (Feed)mAdapter.getItem(position);
-				mFeedUrl = "http://"+feed.urlslug+".tumblr.com/rss";
-				Bitmap b = BitmapFactory.decodeResource(getResources(), feed.resourceID);
-				setLatestImage(b);
+				Intent i = new Intent(SelectRSSActivity.this, FeedViewActivity.class);
+				i.putExtra("feed", feed);
+				startActivity(i);
 			}
 		});
+		
+		setupCurrentSyncingRow();
+	}
+	
+	private void setupCurrentSyncingRow() {
+		SharedPreferences settings = getSharedPreferences(
+				"WallpaperSwitcher", 0);
+		String urlString = settings.getString("feed", "");
+		if (urlString != null && !urlString.isEmpty()) {
+			((TextView)findViewById(R.id.current_syncing_blog)).setText("Syncing: " + urlString);
+		}
 	}
 
 	@Override
@@ -85,56 +80,4 @@ public class SelectRSSActivity extends Activity implements LatestImageFetcher.Im
 		return true;
 	}
 	
-	private void setFeedUrl(String surl) {
-		LatestImageFetcher imageFetcher = new LatestImageFetcher();
-		imageFetcher.delegate = this;
-		imageFetcher.fetchFirstImageAt(surl);
-	}
-	
-	private void commitFeedUrl() {
-		SharedPreferences settings = getSharedPreferences("WallpaperSwitcher", 0);
-	    SharedPreferences.Editor editor = settings.edit();
-	    editor.putString("rssURL", mFeedUrl);
-	    editor.commit();
-	    setupRecurringSwitching();
-	    
-	    WallpaperManager wm = WallpaperManager.getInstance(this);
-		try {
-			wm.setBitmap(mLatestBitmap);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		Intent startMain = new Intent(Intent.ACTION_MAIN);
-        startMain.addCategory(Intent.CATEGORY_HOME);
-        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(startMain);
-		finish();
-	}
-	
-	private void setupRecurringSwitching() {
-		SetWallpaperReceiver.setupRecurringAlarm(this);
-	}
-	
-	private void setLatestImage(Bitmap b) {
-		ImageView image = (ImageView)findViewById(R.id.imageView1);
-		image.setImageBitmap(b);
-		mLatestBitmap = b;
-		mSetFeedButton.setVisibility(View.VISIBLE);
-		mSuggestedList.setVisibility(View.GONE);
-		InputMethodManager imm = (InputMethodManager)getSystemService(
-			      Context.INPUT_METHOD_SERVICE);
-			imm.hideSoftInputFromWindow(mUrlField.getWindowToken(), 0);
-	}
-
-	@Override
-	public void imageFetched(Bitmap b) {
-		setLatestImage(b);
-	}
-
-	@Override
-	public void errorFetchingFeed() {
-		Toast.makeText(SelectRSSActivity.this, "Error Fetching Feed", Toast.LENGTH_SHORT).show();
-		mUrlField.requestFocusFromTouch();
-		mUrlField.selectAll();
-	}
 }
