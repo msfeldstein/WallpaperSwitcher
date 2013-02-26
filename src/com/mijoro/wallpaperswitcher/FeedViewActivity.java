@@ -43,10 +43,9 @@ public class FeedViewActivity extends Activity implements LatestImageFetcher.Ima
 		LatestImageFetcher imageFetcher = new LatestImageFetcher();
 		imageFetcher.delegate = this;
 		imageFetcher.fetchFirstImageAt(mFeedUrl);
-		System.out.println("Fetching " + mFeedUrl);
-		((TextView)findViewById(R.id.blogname)).setText(feed.title);
 		
 		getActionBar().setDisplayHomeAsUpEnabled(true);
+		getActionBar().setTitle(feed.title);
 	}
 
 	private void commitFeedUrl() {
@@ -85,6 +84,7 @@ public class FeedViewActivity extends Activity implements LatestImageFetcher.Ima
 		ImageView iv = (ImageView)findViewById(R.id.thumbnail);
 		iv.setImageBitmap(b);
 		mSetFeedButton.setEnabled(true);
+		findViewById(R.id.loadingBar).setVisibility(View.GONE);
 	}
 	
 	@Override
