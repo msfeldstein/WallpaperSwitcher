@@ -10,7 +10,6 @@ import android.content.SharedPreferences;
 
 public class WallpaperSwitcherModel {
 	public static String URL_KEY = "rssURL";
-	public static String FEED_NAME_KEY = "feedTitle";
 	public static String FEED_SLUG_KEY = "feed";
 	
 	public static String getFeedUrl(Context c) {
@@ -49,7 +48,6 @@ public class WallpaperSwitcherModel {
 		SharedPreferences settings = c.getSharedPreferences(
 				"WallpaperSwitcher", 0);
 		SharedPreferences.Editor editor = settings.edit();
-		editor.remove(FEED_NAME_KEY);
 		editor.remove(FEED_SLUG_KEY);
 		editor.remove(URL_KEY);
 		editor.commit();

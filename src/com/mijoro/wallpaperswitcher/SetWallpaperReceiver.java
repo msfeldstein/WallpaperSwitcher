@@ -1,15 +1,10 @@
 package com.mijoro.wallpaperswitcher;
 
 import java.io.IOException;
-import java.util.Calendar;
-
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.app.WallpaperManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.PowerManager;
 
