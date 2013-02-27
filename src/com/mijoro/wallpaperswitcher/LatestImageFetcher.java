@@ -35,7 +35,8 @@ public class LatestImageFetcher {
 		h = new Handler();
 	}
 	
-	public void fetchFirstImageAt(String urlString) {
+	public void fetchFirstImageAt(String tumblrSlug) {
+		String urlString = "http://" + tumblrSlug + ".tumblr.com/api/read";
 		urlStringToFetch = urlString;
 		new Thread(feedParser).start();
 	}
@@ -107,11 +108,8 @@ public class LatestImageFetcher {
 		private String tagName;
 		private StringBuilder currentStringData;
 		public String result; 
-		Pattern pattern;
-		Matcher matcher;
 		
 		public XmlHandler() {
-			pattern = Pattern.compile("^(http|https|ftp)\\://[a-zA-Z0-9\\-\\.]+\\.[a-zA-Z]{2,3}(:[a-zA-Z0-9]*)?/?([a-zA-Z0-9\\-\\._\\?\\,\\'/\\\\\\+&amp;%\\$#\\=~])*$");
 		}
 		
 	    /**
@@ -129,8 +127,8 @@ public class LatestImageFetcher {
 	    @Override
 	    public void endElement(String uri, String localName, String qName)
 	            throws SAXException {
-	    	if (tagName.toLowerCase().equals("description")) {
-	    		String res = searchForURL(currentStringData.toString());
+	    	if (tagName.toLowerCase().equals("photo-url")) {
+	    		String res = currentStringData.toString();
 	    		if (res != null && !res.isEmpty()) {
 	    			result = res;
 	    			throw new MySAXTerminatorException();
@@ -143,23 +141,9 @@ public class LatestImageFetcher {
 	    @Override
 	    public void characters(char[] ch, int start, int length)
 	            throws SAXException {
-	    	if (tagName.toLowerCase().equals("description")) {
+	    	if (tagName.toLowerCase().equals("photo-url")) {
 	    		currentStringData.append(ch, start, length);
 	    	}
-	    }
-	    
-	    private String searchForURL(String s) {
-	    	String [] parts = s.split("\"");
-
-	        // Attempt to convert each item into an URL.   
-	        for( String item : parts ) try {
-	            URL url = new URL(item);
-	            // If possible then replace with anchor...
-	            return url.toString();
-	        } catch (MalformedURLException e) {
-	        }
-	        return null;
-
 	    }
 	}
 }

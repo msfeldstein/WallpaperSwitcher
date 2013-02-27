@@ -28,7 +28,7 @@ public class FeedViewActivity extends Activity implements LatestImageFetcher.Ima
 		
 		Feed feed = getIntent().getExtras().getParcelable("feed");
 		mFeed = feed;
-		mFeedUrl = "http://"+feed.urlslug+".tumblr.com/rss";
+		mFeedUrl = feed.urlslug;
 		
 		mSetFeedButton = (Button)findViewById(R.id.setfeedbutton);
 		mSetFeedButton.setEnabled(false);
