@@ -20,10 +20,7 @@ public class WallpaperSwitcherModel {
 	}
 	
 	public static void setupRecurringAlarm(Context c) {
-		Intent intent = new Intent(c, SetWallpaperReceiver.class);
-		intent.setAction("com.mijoro.wallpaperswitcher.CHANGE_WALLPAPER");
-		PendingIntent pendingIntent = PendingIntent.getBroadcast(c, 0, intent,
-				PendingIntent.FLAG_UPDATE_CURRENT);
+		PendingIntent pendingIntent = getPendingIntent(c);
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeInMillis(System.currentTimeMillis());
 		calendar.add(Calendar.HOUR, 1);
@@ -36,10 +33,7 @@ public class WallpaperSwitcherModel {
 	}
 
 	public static void cancelRecurringAlarm(Context c) {
-		Intent intent = new Intent(c, SetWallpaperReceiver.class);
-		intent.setAction("com.mijoro.wallpaperswitcher.CHANGE_WALLPAPER");
-		PendingIntent pendingIntent = PendingIntent.getBroadcast(c, 0, intent,
-				PendingIntent.FLAG_UPDATE_CURRENT);
+		PendingIntent pendingIntent = getPendingIntent(c);
 		pendingIntent.cancel();
 		AlarmManager alarm = (AlarmManager) c
 				.getSystemService(Context.ALARM_SERVICE);
@@ -51,5 +45,13 @@ public class WallpaperSwitcherModel {
 		editor.remove(FEED_SLUG_KEY);
 		editor.remove(URL_KEY);
 		editor.commit();
+	}
+	
+	private static PendingIntent getPendingIntent(Context c) {
+		Intent intent = new Intent(c, SetWallpaperService.class);
+		intent.setAction("com.mijoro.wallpaperswitcher.CHANGE_WALLPAPER");
+		PendingIntent pendingIntent = PendingIntent.getService(c, 0, intent,
+				PendingIntent.FLAG_UPDATE_CURRENT);
+		return pendingIntent;
 	}
 }

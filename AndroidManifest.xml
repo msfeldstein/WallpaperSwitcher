@@ -28,11 +28,11 @@
         </activity>
         <activity android:name="com.mijoro.wallpaperswitcher.FeedViewActivity"></activity>
 
-        <receiver android:name="com.mijoro.wallpaperswitcher.SetWallpaperReceiver" >
+        <service android:name="com.mijoro.wallpaperswitcher.SetWallpaperService" >
             <intent-filter>
                 <action android:name="com.mijoro.wallpaperswitcher.CHANGE_WALLPAPER" />
             </intent-filter>
-        </receiver>
+        </service>
 
         <activity
             android:name="com.mijoro.wallpaperswitcher.FeedViewActivity"

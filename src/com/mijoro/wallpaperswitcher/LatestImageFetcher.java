@@ -3,8 +3,7 @@ package com.mijoro.wallpaperswitcher;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Date;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -33,10 +32,12 @@ public class LatestImageFetcher {
 	
 	public LatestImageFetcher() {
 		h = new Handler();
+		System.out.println("Mijoro new image fetcher at " + new Date().toLocaleString());
 	}
 	
 	public void fetchFirstImageAt(String tumblrSlug) {
 		String urlString = "http://" + tumblrSlug + ".tumblr.com/api/read";
+		System.out.println("Mijoro fetch " + urlString + " at " + new Date().toLocaleString());
 		urlStringToFetch = urlString;
 		new Thread(feedParser).start();
 	}
@@ -79,11 +80,12 @@ public class LatestImageFetcher {
 			} catch (MySAXTerminatorException e) {
 				System.out.println("Done fetching a bitmap!");
 			} catch (Exception e) {
+				System.out.println("Mijoro Exception at " + new Date().toLocaleString() + e.getMessage());
 				e.printStackTrace();
 			    sendErrorOnMainThread();
 			}
 			if (myXMLHandler.result != null) {
-				System.out.println("Found image " + myXMLHandler.result);
+				System.out.println(" Mijoro Found image " + myXMLHandler.result + " at " + new Date().toLocaleString());
 				URL url;
 				try {
 					url = new URL(myXMLHandler.result);
