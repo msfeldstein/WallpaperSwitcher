@@ -70,7 +70,7 @@ public class FeedViewActivity extends Activity implements LatestImageFetcher.Ima
 	}
 	
 	private void setupRecurringSwitching() {
-		SetWallpaperReceiver.setupRecurringAlarm(this);
+		WallpaperSwitcherModel.setupRecurringAlarm(this);
 	}
 	
 	@Override

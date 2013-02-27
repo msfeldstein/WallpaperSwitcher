@@ -2,54 +2,91 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#3f464e"
     android:orientation="vertical"
     tools:context=".SelectRSSActivity" >
 
     <RelativeLayout
+        android:id="@+id/current_sync_row"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:background="#394654"
+        android:orientation="horizontal"
+        android:padding="5dp" >
 
-        <Button
+        <ImageButton
             android:id="@+id/cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            
-            android:text="Cancel" />
+            android:layout_centerInParent="true"
+            android:background="@null"
+            android:scaleType="centerInside"
+            android:src="@drawable/cancel_x"
+            android:textColor="#FFFFFF" />
+
+        <TextView
+            android:id="@+id/currently_syncing"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:text="Currently Syncing"
+            android:textColor="#EEEEEE"
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/current_syncing_blog"
-            android:textSize="20sp"
-            android:layout_centerInParent="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toLeftOf="@+id/cancel" />
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/currently_syncing"
+            android:layout_toLeftOf="@+id/cancel"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp" />
     </RelativeLayout>
 
-    <LinearLayout
+    <ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:scaleType="fitXY"
+        android:src="@drawable/shadow" />
+
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" 
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="2dp">
 
         <EditText
             android:id="@+id/urlField"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
+            android:gravity="right"
             android:hint="Blog Name"
             android:imeOptions="actionDone"
-            android:singleLine="true" >
+            android:inputType="textNoSuggestions"
+            android:singleLine="true"
+            android:textColor="#FFFFFF" >
 
             <requestFocus />
         </EditText>
 
         <TextView
-            android:id="@+id/textView1"
+            android:id="@+id/suffix_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=".tumblr.com" />
-    </LinearLayout>
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:paddingRight="7dp"
+            android:text=".tumblr.com"
+            android:textColor="#aaaaaa"
+            android:textSize="16dp" />
+    </RelativeLayout>
+
 
     <ListView
         android:id="@+id/suggestedList"
