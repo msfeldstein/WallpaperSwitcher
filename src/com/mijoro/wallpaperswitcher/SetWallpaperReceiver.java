@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Handler;
 import android.os.PowerManager;
 
 public class SetWallpaperReceiver extends BroadcastReceiver implements
@@ -27,6 +28,14 @@ public class SetWallpaperReceiver extends BroadcastReceiver implements
 		wl = pm.newWakeLock(
 				PowerManager.PARTIAL_WAKE_LOCK, "WallpaperSwitcher");
 		wl.acquire();
+		Handler h = new Handler();
+		h.postDelayed(new Runnable() {
+			
+			@Override
+			public void run() {
+				if (wl.isHeld()) wl.release();
+			}
+		}, 1000 * 10);
 	}
 
 	@Override
@@ -38,12 +47,12 @@ public class SetWallpaperReceiver extends BroadcastReceiver implements
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		wl.release();
+		if (wl.isHeld()) wl.release();
 	}
 
 	@Override
 	public void errorFetchingFeed() {
-		wl.release();
+		if (wl.isHeld()) wl.release();
 		System.out
 				.println("Automatic wallpaper fetcher has an error fetching feed");
 	}
