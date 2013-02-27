@@ -9,9 +9,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 public class SuggestedSourceAdapter extends BaseAdapter {
-	private String[] feeds = new String[3];
-	private String[] feedNames = new String[3];
-	private int[] imageIDs = new int[3];
+	private String[] feeds = new String[5];
+	private String[] feedNames = new String[5];
+	private int[] imageIDs = new int[5];
 	
 	private Context mContext;
 	
@@ -21,14 +21,20 @@ public class SuggestedSourceAdapter extends BaseAdapter {
 		feeds[0] = "geometrydaily";
 		feeds[1] = "travelingcolors";
 		feeds[2] = "earthlynation";
+		feeds[3] = "essymays";
+		feeds[4] = "archiwista";
 		
 		imageIDs[0] = R.drawable.geometrydaily;
 		imageIDs[1] = R.drawable.travelingcolors;
 		imageIDs[2] = R.drawable.earthlynation;
+		imageIDs[3] = R.drawable.essymays;
+		imageIDs[4] = R.drawable.architesta;
 		
 		feedNames[0] = "Geometry Daily";
 		feedNames[1] = "Traveling Colors";
 		feedNames[2] = "Earthly Nation";
+		feedNames[3] = "Essy Mays";
+		feedNames[4] = "Archiwista";
 	}
 	
 	@Override

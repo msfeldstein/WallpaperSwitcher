@@ -11,14 +11,16 @@ public final class R {
     public static final class attr {
     }
     public static final class drawable {
-        public static final int cancel_x=0x7f020000;
-        public static final int earthlynation=0x7f020001;
-        public static final int geometrydaily=0x7f020002;
-        public static final int ic_launcher=0x7f020003;
-        public static final int shadow=0x7f020004;
-        public static final int suffix=0x7f020005;
-        public static final int travelingcolors=0x7f020006;
-        public static final int tumblrwallpapericon=0x7f020007;
+        public static final int architesta=0x7f020000;
+        public static final int cancel_x=0x7f020001;
+        public static final int earthlynation=0x7f020002;
+        public static final int essymays=0x7f020003;
+        public static final int geometrydaily=0x7f020004;
+        public static final int ic_launcher=0x7f020005;
+        public static final int shadow=0x7f020006;
+        public static final int suffix=0x7f020007;
+        public static final int travelingcolors=0x7f020008;
+        public static final int tumblrwallpapericon=0x7f020009;
     }
     public static final class id {
         public static final int blogname=0x7f070002;

@@ -44,7 +44,7 @@ public class FeedViewActivity extends Activity implements LatestImageFetcher.Ima
 		imageFetcher.fetchFirstImageAt(mFeedUrl);
 		
 		getActionBar().setDisplayHomeAsUpEnabled(true);
-		getActionBar().setTitle(feed.title);
+		getActionBar().setTitle(feed.title + " - Latest" );
 	}
 
 	private void commitFeedUrl() {
